@@ -63,7 +63,7 @@ function filterByQuery(query, animalsArray) {
         if (req.query) {
             results = filterByQuery(req.query, results);
         }
-        res.json(results);
+        return res.json(results);
     });
     
     
