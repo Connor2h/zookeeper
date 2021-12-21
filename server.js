@@ -5,9 +5,6 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-app.listen(PORT, () => {
-    console.log(`API server now on port ${PORT}!`);
-});
 
 function filterByQuery(query, animalsArray) {
     let filteredResults = animalsArray;
@@ -26,8 +23,8 @@ function filterByQuery(query, animalsArray) {
     // Note that we save the animalsArray as filteredResults here:
     let filteredResults = animalsArray;
     if (query.personalityTraits) {
-      // Save personalityTraits as a dedicated array.
-      // If personalityTraits is a string, place it into a new array and save.
+        // Save personalityTraits as a dedicated array.
+        // If personalityTraits is a string, place it into a new array and save.
         if (typeof query.personalityTraits === 'string') {
             personalityTraitsArray = [query.personalityTraits];
         } else {
@@ -43,29 +40,33 @@ function filterByQuery(query, animalsArray) {
             // so at the end we'll have an array of animals that have every one 
             // of the traits when the .forEach() loop is finished.
             filteredResults = filteredResults.filter(
-            animal => animal.personalityTraits.indexOf(trait) !== -1
-            );
-        });
+                animal => animal.personalityTraits.indexOf(trait) !== -1
+                );
+            });
+        }
+        if (query.diet) {
+            filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
+        }
+        if (query.species) {
+            filteredResults = filteredResults.filter(animal => animal.species === query.species);
+        }
+        if (query.name) {
+            filteredResults = filteredResults.filter(animal => animal.name === query.name);
+        }
+        // return the filtered results:
+        return filteredResults;
     }
-    if (query.diet) {
-        filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
-    }
-    if (query.species) {
-        filteredResults = filteredResults.filter(animal => animal.species === query.species);
-    }
-    if (query.name) {
-        filteredResults = filteredResults.filter(animal => animal.name === query.name);
-    }
-    // return the filtered results:
-    return filteredResults;
-}
-
-app.get('/api/animals', (req, res) => {
-    //res.send('Hello!');//sends hello to browser
-    let results = animals;
-    if (req.query) {
-        results = filterByQuery(req.query, results);
-    }
-    res.json(results);
-});
-
+    
+    app.get('/api/animals', (req, res) => {
+        //res.send('Hello!');//sends hello to browser
+        let results = animals;
+        if (req.query) {
+            results = filterByQuery(req.query, results);
+        }
+        res.json(results);
+    });
+    
+    
+    app.listen(PORT, () => {
+        console.log(`API server now on port ${PORT}!`);
+    });
