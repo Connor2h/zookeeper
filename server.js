@@ -14,20 +14,7 @@ app.use(express.json());
 // provided a file path to a location in our application (in this case, the public folder) and instruct the server to make these files static resources
 app.use(express.static('public'));
 
-
 function filterByQuery(query, animalsArray) {
-    let filteredResults = animalsArray;
-    if (query.diet) {
-        filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
-    }
-    if (query.species) {
-        filteredResults = filteredResults.filter(animal => animal.species === query.species);
-    }
-    if (query.name) {
-        filteredResults = filteredResults.filter(animal => animal.name === query.name);
-    }
-    return filteredResults;
-}function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
     // Note that we save the animalsArray as filteredResults here:
     let filteredResults = animalsArray;
@@ -50,21 +37,21 @@ function filterByQuery(query, animalsArray) {
             // of the traits when the .forEach() loop is finished.
             filteredResults = filteredResults.filter(
                 animal => animal.personalityTraits.indexOf(trait) !== -1
-                );
-            });
-        }
-        if (query.diet) {
-            filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
-        }
-        if (query.species) {
-            filteredResults = filteredResults.filter(animal => animal.species === query.species);
-        }
-        if (query.name) {
-            filteredResults = filteredResults.filter(animal => animal.name === query.name);
-        }
-        // return the filtered results:
-        return filteredResults;
+            );
+        });
     }
+    if (query.diet) {
+        filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
+    }
+    if (query.species) {
+        filteredResults = filteredResults.filter(animal => animal.species === query.species);
+    }
+    if (query.name) {
+        filteredResults = filteredResults.filter(animal => animal.name === query.name);
+    }
+    // return the filtered results:
+    return filteredResults;
+}
 
 function findById(id, animalsArray) {
   const result = animalsArray.filter(animal => animal.id === id)[0];
@@ -122,6 +109,23 @@ app.get('/api/animals/:id', (req, res) => {
   }
 });
 
+app.post('/api/animals', (req, res) => {
+  // req.body is where our incoming content will be
+  console.log(req.body);
+  
+  // set id based on what the next index of the array will be
+  req.body.id = animals.length.toString();
+  
+  // if any data in req.body is incorrect, send 400 error back
+  if (!validateAnimal(req.body)) {
+    res.status(400).send('The animal is not properly formatted.');
+  } else {
+    // add animal to json file and animals array in this function
+    const animal = createNewAnimal(req.body, animals);
+    res.json(animal);
+  }
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
@@ -138,23 +142,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-app.post('/api/animals', (req, res) => {
-  // req.body is where our incoming content will be
-  console.log(req.body);
-
-  // set id based on what the next index of the array will be
-  req.body.id = animals.length.toString();
-
-  // if any data in req.body is incorrect, send 400 error back
-  if (!validateAnimal(req.body)) {
-    res.status(400).send('The animal is not properly formatted.');
-  } else {
-    // add animal to json file and animals array in this function
-    const animal = createNewAnimal(req.body, animals);
-    res.json(animal);
-  }
-});
-    
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
 });
