@@ -9,19 +9,19 @@ router.get('/animals', (req, res) => {
     if (req.query) {
         results = filterByQuery(req.query, results);
     }
-    return res.json(results);
+    res.json(results);
 });
 
 router.get('/animals/:id', (req, res) => {
     const result = findById(req.params.id, animals);
     if (result) {
-    res.json(result);
+        res.json(result);
     } else {
-    res.send(404);
+        res.send(404);
     }
 });
 
-router.post('/api/animals', (req, res) => {
+router.post('/animals', (req, res) => {
     // req.body is where our incoming content will be
     console.log(req.body);
     
@@ -38,4 +38,4 @@ router.post('/api/animals', (req, res) => {
     }
 });
 
-module.exports  = router;
+module.exports = router;
